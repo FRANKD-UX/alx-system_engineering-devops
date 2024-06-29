@@ -1,0 +1,9 @@
+#!/bin/bash
+#!/bin/bash
+
+# Get the mode of olleh
+mode=$(stat -c "%a" olleh)
+
+# Set the mode of hello
+chmod "$mode" hello
+
