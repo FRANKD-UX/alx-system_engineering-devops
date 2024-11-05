@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# This script displays "To infinity and beyond" indefinitely with a 2-second pause between each message.
+# It displays "I am invincible!!!" when receiving a SIGTERM signal and can be stopped by specifying the "stop" argument.
+
+if [[ $1 == "stop" ]]; then
+    # Stop mode: find and terminate the running instance of this script.
+    pid=$(pgrep -f "$0")
+    
+    if [[ -n $pid ]]; then
+        echo "Stopping $0 process (PID: $pid)..."
+        kill "$pid"
+        echo "Process stopped."
+    else
+        echo "$0 process not found."
+    fi
+
+else
+    # Infinite loop mode: displays messages and handles SIGTERM
+    trap 'echo "I am invincible!!!"' SIGTERM
+    
+    while true; do
+        echo "To infinity and beyond"
+        sleep 2
+    done
+fi
