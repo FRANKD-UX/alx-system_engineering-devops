@@ -1,4 +1,12 @@
 #!/usr/bin/env ruby
-## This script matches all instances of "School" in the input argument
+# This script accepts an argument and checks if it matches the pattern for "h" followed by one or more "b"s, and ending with "n"
 
-puts ARGV[0].scan(/School/).join
+# Regular expression to match the pattern "h" followed by one or more "b"s, and ending with "n"
+input_string = ARGV[0]
+
+# Check if the input string matches the regular expression
+  if input_string.match?(/hb+n/)
+    puts input_string
+  else
+    puts ""
+  end
