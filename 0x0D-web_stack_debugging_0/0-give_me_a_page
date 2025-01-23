@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# This script fixes the server by copying /etc/passwd to /tmp and creating /tmp/isworking
+
+# Copy /etc/passwd to /tmp
+cp /etc/passwd /tmp/
+
+# Create /tmp/isworking with the content 'OK'
+echo OK > /tmp/isworking
