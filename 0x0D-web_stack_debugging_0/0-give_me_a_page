@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
-# This script fixes the server by copying /etc/passwd to /tmp and creating /tmp/isworking
+# Install Apache, create the "Hello ALX" page, and start Apache
 
-# Copy /etc/passwd to /tmp
-cp /etc/passwd /tmp/
+# Install Apache
+apt-get update
+apt-get install apache2 -y
 
-# Create /tmp/isworking with the content 'OK'
-echo OK > /tmp/isworking
+# Create the HTML page with the message
+echo "Hello ALX" > /var/www/html/index.html
+
+# Start Apache service
+service apache2 start
