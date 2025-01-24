@@ -2,3 +2,5 @@
 # This script creates an RSA key pair with the private key named "school" and a passphrase "betty"
 
 ssh-keygen -t rsa -b 4096 -f /root/school -N "betty"
+echo "Key generation complete. Checking file..."
+ls -l /root/school
