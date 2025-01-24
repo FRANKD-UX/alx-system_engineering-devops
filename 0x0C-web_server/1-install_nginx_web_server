@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# This script installs and configures Nginx on Ubuntu 16.04
+
+# Update package lists and install Nginx
+apt-get update -y
+apt-get install nginx -y
+
+# Start Nginx without using systemctl
+service nginx start
+
+# Replace the default index.html with "Hello World!" content
+echo 'Hello World!' > /var/www/html/index.nginx-debian.html
+
+# Restart Nginx using the service command to apply the changes
+service nginx restart
