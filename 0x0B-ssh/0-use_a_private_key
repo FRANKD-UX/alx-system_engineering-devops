@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
-# This script connects to a remote server using a private key named mykey
+# This script connects to a remote server using a private key located at ~/.ssh/school
 
-ssh -i ~/.ssh/mykey ubuntu@54.165.68.31
+ssh -i ~/.ssh/school ubuntu@54.165.68.31
+
