@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Function to fetch subdomain information
+fetch_subdomain_info() {
+    local domain=$1
+    local subdomain=$2
+    local full_domain="${subdomain}.${domain}"
+    local dig_result=$(dig +short "${full_domain}")
+
+    if [[ -n "${dig_result}" ]]; then
+        echo "The subdomain ${subdomain} is a A record and points to ${dig_result}"
+    else
+        echo "No A record found for subdomain ${subdomain}"
+    fi
+}
+
+# Main script logic
+main() {
+    local domain=$1
+    local subdomain=$2
+
+    if [[ -z "${domain}" ]]; then
+        echo "Domain name is mandatory"
+        exit 1
+    fi
+
+    if [[ -z "${subdomain}" ]]; then
+        subdomain_list=("www" "lb-01" "web-01" "web-02")
+        for sub in "${subdomain_list[@]}"; do
+            fetch_subdomain_info "${domain}" "${sub}"
+        done
+    else
+        fetch_subdomain_info "${domain}" "${subdomain}"
+    fi
+}
+
+# Ignore shellcheck case SC2086
+main $@
+
+
