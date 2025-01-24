@@ -2,16 +2,21 @@
 # This script installs and configures Nginx on Ubuntu 16.04
 
 # Update package lists and install Nginx
+echo "Updating package lists..."
 apt-get update -y
+echo "Installing Nginx..."
 apt-get install nginx -y
 
 # Start Nginx without using systemctl
+echo "Starting Nginx..."
 service nginx start
 
 # Replace the default index.html with "Hello World!" content
+echo "Replacing default index.html content..."
 echo 'Hello World!' > /var/www/html/index.nginx-debian.html
 
 # Verify Nginx is running
+echo "Verifying Nginx is running..."
 curl -I localhost | grep "HTTP/1.1 200"
 if [ $? -ne 0 ]; then
   echo "Nginx did not start correctly or is not returning a 200 status code."
@@ -19,11 +24,16 @@ if [ $? -ne 0 ]; then
 fi
 
 # Restart Nginx using the service command to apply the changes
+echo "Restarting Nginx..."
 service nginx restart
 
 # Verify the content of the root page
+echo "Verifying root page content..."
 curl -s localhost | grep "Hello World!"
 if [ $? -ne 0 ]; then
   echo "Nginx is not returning 'Hello World!' at its root."
   exit 1
 fi
+
+echo "Nginx has been installed and configured successfully!"
+
