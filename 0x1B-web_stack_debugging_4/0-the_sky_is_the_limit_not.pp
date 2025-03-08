@@ -1,6 +1,19 @@
-# Fixes Nginx configuration to handle high traffic by increasing worker connections and file descriptors
-exec { 'fix--for-nginx':
-  command => '/bin/sed -i "s/worker_connections [0-9]*;/worker_connections 4096;/g; s/# ULIMIT=/ULIMIT=/g; s/ULIMIT=.*/ULIMIT=\"-n 8192\"/g" /etc/nginx/nginx.conf /etc/default/nginx && sudo service nginx restart',
-  path    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
-  onlyif  => 'test -f /etc/nginx/nginx.conf',
+nx configuration to handle 2000 requests with 100 concurrent connections
+
+exec { 'increase_worker_connections':
+  command => '/bin/sed -i "s/worker_connections .*/worker_connections 19000;/" /etc/nginx/nginx.conf',
+  onlyif  => '/bin/grep -q "worker_connections  768;" /etc/nginx/nginx.conf',
+  notify  => Service['nginx'],
 }
+
+exec { 'increase_ulimit':
+  command => '/bin/sed -i "s/^ULIMIT=.*/ULIMIT=\"-n 32768\"/" /etc/default/nginx',
+  notify  => Service['nginx'],
+}
+
+service { 'nginx':
+  ensure     => running,
+  enable     => true,
+  hasrestart => true,
+}
+
