@@ -1,23 +1,10 @@
-class wordpress_fix {
-    package { 'sed':
-        ensure => installed,
-    }
+# This Puppet manifest fixes the WordPress LAMP stack by updating the DB host in wp-config.php
 
-    file_line { 'fix-wp-db-host':
-        path   => '/var/www/html/wp-config.php',
-        line   => "define('DB_HOST', '127.0.0.1');",
-        match  => "define('DB_HOST', 'localhost');",
-        require => Package['sed'],
-        notify => Service['apache2'],
-    }
+$sed_line = "s/define(\\'DB_HOST\\', \\'localhost\\');/define(\\'DB_HOST\\', \\'127.0.0.1\\');/"
 
-    service { 'apache2':
-        ensure    => running,
-        enable    => true,
-        hasstatus => true,
-        hasrestart => true,
-    }
+exec { 'fix-wp-config-db-host':
+  command => "/bin/sed -i \"s/define(\\'DB_HOST\\', \\'localhost\\');/define(\\'DB_HOST\\', \\'127.0.0.1\\');/\" /var/www/html/wp-config.php && service apache2 restart",
+  unless  => "[ -f /var/www/html/wp-config.php ] && /bin/grep -q \"define('DB_HOST', '127.0.0.1');\" /var/www/html/wp-config.php",
+  path    => ['/bin', '/usr/bin'],
 }
-
-include wordpress_fix
 
