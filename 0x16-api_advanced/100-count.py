@@ -26,23 +26,26 @@ def count_words(subreddit, word_list, word_count=None, after=None):
     if response.status_code != 200:
         return
     
-    data = response.json()
-    posts = data.get("data", {}).get("children", [])
-    
-    for post in posts:
-        title = post["data"].get("title", "").lower().split()
-        for word in word_list:
-            word_lower = word.lower()
-            word_count[word_lower] += title.count(word_lower)
-    
-    after = data.get("data", {}).get("after")
-    if after:
-        return count_words(subreddit, word_list, word_count, after)
-    
-    sorted_words = sorted(
-        [(word, count) for word, count in word_count.items() if count > 0],
-        key=lambda x: (-x[1], x[0])
-    )
-    
-    for word, count in sorted_words:
-        print(f"{word}: {count}")
+    try:
+        data = response.json()
+        posts = data.get("data", {}).get("children", [])
+        
+        for post in posts:
+            title = post["data"].get("title", "").lower().split()
+            for word in word_list:
+                word_lower = word.lower()
+                word_count[word_lower] += title.count(word_lower)
+        
+        after = data.get("data", {}).get("after")
+        if after:
+            return count_words(subreddit, word_list, word_count, after)
+        
+        sorted_words = sorted(
+            [(word, count) for word, count in word_count.items() if count > 0],
+            key=lambda x: (-x[1], x[0])
+        )
+        
+        for word, count in sorted_words:
+            print(f"{word}: {count}")
+    except ValueError:
+        return
