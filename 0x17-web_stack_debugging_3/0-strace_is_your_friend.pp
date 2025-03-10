@@ -1,19 +1,14 @@
 # This Puppet manifest fixes the WordPress LAMP stack by updating the DB host in
-# wp-config.php. It replaces 'localhost' with '127.0.0.1' to force a TCP connection
-# and then restarts Apache.
+# wp-config.php from 'localhost' to '127.0.0.1' (forcing a TCP connection) and then
+# restarting Apache.
 
-$sed_command = "/bin/sed -i 's/define(\\'DB_HOST\\', \\'localhost\\');/define(\\'DB_HOST\\', \\'127.0.0.1\\');/' /var/www/html/wp-config.php"
+$sed_line = "s/define('DB_HOST', 'localhost');/define('DB_HOST', '127.0.0.1');/"
 
 exec { 'fix-wp-config-db-host':
-  command => "${sed_command} && " +
-             "service apache2 restart",
-  unless  => "/bin/grep -q \"define('DB_HOST', '127.0.0.1');\" /var/www/html/wp-config.php",
+  command => '/bin/sed -i ' + $sed_line +
+             ' /var/www/html/wp-config.php && service apache2 restart',
+  unless  => '/bin/grep -q "define(\'DB_HOST\', \'127.0.0.1\');" ' +
+             '/var/www/html/wp-config.php',
   path    => ['/bin', '/usr/bin'],
-  require => File['/var/www/html/wp-config.php'],
-}
-
-file { '/var/www/html/wp-config.php':
-  ensure  => file,
-  require => Package['apache2'],
 }
 
