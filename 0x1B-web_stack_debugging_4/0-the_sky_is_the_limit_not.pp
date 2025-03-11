@@ -1,22 +1,23 @@
-# Fixes Nginx configuration to handle high traffic by increasing worker connections and file descriptors
+# This Puppet manifest optimizes Nginx for high concurrent traffic
 
-exec { 'increase_worker_connections':
-  command => '/bin/sed -i "s/worker_connections [0-9]*;/worker_connections 4096;/g" /etc/nginx/nginx.conf',
-  path    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
-  onlyif  => 'test -f /etc/nginx/nginx.conf',
-  notify  => Service['nginx'],
+class optimize_nginx {
+    file { '/etc/nginx/nginx.conf':
+        ensure  => file,
+        content => template('nginx/optimized_nginx.conf'),
+        notify  => Service['nginx'],
+    }
+
+    service { 'nginx':
+        ensure => running,
+        enable => true,
+    }
+
+    exec { 'reload-nginx':
+        command     => '/etc/init.d/nginx reload',
+        refreshonly => true,
+        subscribe   => File['/etc/nginx/nginx.conf'],
+    }
 }
 
-exec { 'increase_ulimit':
-  command => '/bin/sed -i "s/^# ULIMIT=.*$/ULIMIT=\"-n 65535\"/" /etc/default/nginx',
-  path    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
-  onlyif  => 'test -f /etc/default/nginx',
-  notify  => Service['nginx'],
-}
-
-service { 'nginx':
-  ensure     => running,
-  enable     => true,
-  hasrestart => true,
-}
+include optimize_nginx
 
