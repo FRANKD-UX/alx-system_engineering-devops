@@ -1,3 +1,4 @@
+# Reconfigure the OS for 'holberton' to login and open a file without any error message
 class user_limit {
 
   # Ensure the correct limits exist for the holberton user
