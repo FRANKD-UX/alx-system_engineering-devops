@@ -1,22 +1,24 @@
 # Reconfigure the OS for 'holberton' to login and open a file without any error message
 class user_limit {
-
-  # Ensure the correct limits exist for the holberton user
-  exec { 'increase-hard-file-limit-holberton-user':
-    command => 'sed -i "/holberton hard nofile/c\holberton hard nofile 50000" /etc/security/limits.conf || echo "holberton hard nofile 50000" >> /etc/security/limits.conf',
-    path    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
-  }
-
+  
+  # Increase the soft file limit for the holberton user
   exec { 'increase-soft-file-limit-holberton-user':
-    command => 'sed -i "/holberton soft nofile/c\holberton soft nofile 50000" /etc/security/limits.conf || echo "holberton soft nofile 50000" >> /etc/security/limits.conf',
-    path    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+    command => 'sed -i "/holberton soft/s/4/50000/" /etc/security/limits.conf',
+    path    => '/usr/local/bin/:/bin/',
   }
 
-  # Restart SSH to apply the new limits for new sessions
+  # Increase the hard file limit for the holberton user
+  exec { 'increase-hard-file-limit-holberton-user':
+    command => 'sed -i "/holberton hard/s/5/50000/" /etc/security/limits.conf',
+    path    => '/usr/local/bin/:/bin/',
+  }
+
+  # Restart the session to apply the new limits
   exec { 'restart-session-to-apply-limits':
-    command   => 'service ssh restart',
-    path      => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
-    subscribe => [Exec['increase-hard-file-limit-holberton-user'], Exec['increase-soft-file-limit-holberton-user']],
+    command => 'pkill -KILL -u holberton',
+    path    => '/usr/bin:/bin',
+    refreshonly => true,
+    notify   => Exec['increase-soft-file-limit-holberton-user'],
   }
 }
 
