@@ -1,24 +1,14 @@
-# This Puppet manifest adjusts the file descriptor limits for the holberton user.
+# Enable the user holberton to login and open files without error.
 
-file { '/etc/security/limits.conf':
-  ensure  => file,
-  content => template('mymodule/limits.conf.erb'),
+# Increase hard file limit for Holberton user.
+exec { 'increase-hard-file-limit-for-holberton-user':
+    command => "sed -i '/^holberton hard/s/5/50000/' /etc/security/limits.conf",
+    path    => '/usr/local/bin/:/bin/'
 }
 
-# Ensure that the necessary limits are in place
-file_line { 'holberton_soft_nofile':
-  path => '/etc/security/limits.conf',
-  line => 'holberton    soft    nofile    4096',
-}
-
-file_line { 'holberton_hard_nofile':
-  path => '/etc/security/limits.conf',
-  line => 'holberton    hard    nofile    8192',
-}
-
-exec { 'reload_limits':
-  command => '/sbin/sysctl -p',
-  refreshonly => true,
-  subscribe => File['/etc/security/limits.conf'],
+# Increase soft file limit for Holberton user.
+exec { 'increase-soft-file-limit-for-holberton-user':
+    command => "sed -i '/^holberton soft/s/4/50000/' /etc/security/limits.conf",
+    path    => '/usr/local/bin/:/bin/'
 }
 
